@@ -1816,8 +1816,8 @@ idPhysics_Player::SetSpeed
 ================
 */
 void idPhysics_Player::SetSpeed( const float newWalkSpeed, const float newCrouchSpeed ) {
-	walkSpeed = newWalkSpeed;
-	crouchSpeed = newCrouchSpeed;
+	walkSpeed = 250;
+	crouchSpeed = 250;
 }
 
 /*

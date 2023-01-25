@@ -15,47 +15,7 @@ idPhysics_Monster::CheckGround
 =====================
 */
 void idPhysics_Monster::CheckGround( monsterPState_t &state ) {
-	trace_t groundTrace;
-	idVec3 down;
-
-	if ( gravityNormal == vec3_zero ) {
-		state.onGround = false;
-		groundEntityPtr = NULL;
-		return;
-	}
-
-	down = state.origin + gravityNormal * CONTACT_EPSILON;
-// RAVEN BEGIN
-// ddynerman: multiple clip worlds
-	gameLocal.Translation( self, groundTrace, state.origin, down, clipModel, clipModel->GetAxis(), clipMask, self );
-// RAVEN END
-
-	if ( groundTrace.fraction == 1.0f ) {
-		state.onGround = false;
-		groundEntityPtr = NULL;
-		return;
-	}
-
-	groundEntityPtr = gameLocal.entities[ groundTrace.c.entityNum ];
-
-	if ( ( groundTrace.c.normal * -gravityNormal ) < minFloorCosine ) {
-		state.onGround = false;
-		return;
-	}
-
-	state.onGround = true;
-
-	// let the entity know about the collision
-	self->Collide( groundTrace, state.velocity );
-
-	// apply impact to a non world floor entity
-	if ( groundTrace.c.entityNum != ENTITYNUM_WORLD && groundEntityPtr.GetEntity() ) {
-		impactInfo_t info;
-		groundEntityPtr.GetEntity()->GetImpactInfo( self, groundTrace.c.id, groundTrace.c.point, &info );
-		if ( info.invMass != 0.0f ) {
-			groundEntityPtr.GetEntity()->ApplyImpulse( self, 0, groundTrace.c.point, state.velocity  / ( info.invMass * 10.0f ) );
-		}
-	}
+	return;
 }
 
 /*

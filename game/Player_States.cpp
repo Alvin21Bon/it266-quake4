@@ -537,7 +537,7 @@ stateResult_t idPlayer::State_Legs_Crouch ( const stateParms_t& parms ) {
 	};
 	switch ( parms.stage ) {
 		case STAGE_INIT:
-			PlayAnim ( ANIMCHANNEL_LEGS, "crouch_down", parms.blendFrames );
+			PlayAnim(ANIMCHANNEL_LEGS, "crouch_up", parms.blendFrames);
 			return SRESULT_STAGE ( STAGE_WAIT );
 		
 		case STAGE_WAIT:

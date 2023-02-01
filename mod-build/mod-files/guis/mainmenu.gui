@@ -15915,7 +15915,7 @@ windowDef Desktop
 		}
 		windowDef video_id
 		{
-			rect	1,-123,640,479
+			rect	0,0,640,479
 			visible	0
 			background	"video/idlogo"
 		}

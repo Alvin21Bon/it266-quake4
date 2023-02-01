@@ -1,4 +1,0 @@
-def
-guis
-strings
-video

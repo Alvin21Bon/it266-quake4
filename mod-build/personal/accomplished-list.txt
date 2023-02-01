@@ -1,0 +1,5 @@
+-----FEBURARY 1-----
+-Imported non-source code files from Steam ()OOOODODODguis, def, etc.) to local repository for version control
+-made a batch file that automatically transfers all of those files from local repository into the mod folder
+-made a bunch of gui changes, played around
+-changed the opening cutscene to ronald mcdonald. most important

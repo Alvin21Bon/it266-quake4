@@ -1,2 +1,0 @@
------HOW TO MAKE A COMPATABLE .ROQ FILE-----
-ffmpeg -i {input} -s 512x512 -strict -2 -vf scale=420:-1 -r 30 -b:v 50k -ar 22050 -ab 56k -ac 1 {output}.roq

@@ -1,4 +1,1 @@
-import entire Steam mod folder into git so it can have version control (for GUI editing, any changes...)
-after importing, learn how to merge folder to master 
-make a bash script to automatically move this folder, package game, basically move the whole folder into steam.  
 learn map making to make a debug stage

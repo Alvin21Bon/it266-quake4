@@ -8597,10 +8597,6 @@ void idPlayer::PerformImpulse( int impulse ) {
 		case IMPULSE_127:	break; // Unused
 // RITUAL END
 
-		case IMPULSE_50: {
-			ToggleFlashlight ( );
-			break;
-		}
 
  		case IMPULSE_51: {
  			LastWeapon();
@@ -8611,11 +8607,11 @@ void idPlayer::PerformImpulse( int impulse ) {
 
 
 		//ALVIN
-		case IMPULSE_255: {
-			
+
+		case IMPULSE_50: {
+			gameLocal.Printf("THis is a test\n");
 			break;
 		}
-
 	} 
 
 //RAVEN BEGIN

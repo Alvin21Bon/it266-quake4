@@ -8606,6 +8606,16 @@ void idPlayer::PerformImpulse( int impulse ) {
  			LastWeapon();
  			break;
  		}
+
+
+
+
+		//ALVIN
+		case IMPULSE_255: {
+			
+			break;
+		}
+
 	} 
 
 //RAVEN BEGIN

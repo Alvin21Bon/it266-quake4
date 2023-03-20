@@ -331,6 +331,7 @@ public:
 		bool		sprintedLastFrame :1;
 		bool		sliding : 1;
 		bool		slidLastFrame : 1;
+		bool		crouchedLastFrame : 1;
 	} pfl;
 		
 	// inventory

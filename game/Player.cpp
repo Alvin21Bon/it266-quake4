@@ -8770,7 +8770,6 @@ void idPlayer::AdjustSpeed( void ) {
 
 		if (!pfl.slidLastFrame)
 		{
-			ToggleFlashlight();
 			currentCrouchSpeed = pm_walkspeed.GetFloat() * 2;
 			originalTime = gameLocal.time;
 		}
@@ -8778,7 +8777,11 @@ void idPlayer::AdjustSpeed( void ) {
 		currentCrouchSpeed -= deteriorateAmount;
 		pm_crouchspeed.SetFloat(currentCrouchSpeed);
 
-		if ((gameLocal.time - originalTime) >= minTimeSliding) pfl.sliding = false;
+		if ((gameLocal.time - originalTime) >= minTimeSliding)
+		{
+			pfl.sliding = false;
+			pm_crouchspeed.SetFloat(defaultCrouchSpeed);
+		}
 
 		
 	}
@@ -9308,6 +9311,10 @@ Called every tic for each player
 ==============
 */
 void idPlayer::Think(void) {
+	//ALVIN OLD
+	struct playerFlags_s oldpfl = pfl;
+
+
 	renderEntity_t* headRenderEnt;
 
 	if (talkingNPC) {
@@ -9382,11 +9389,21 @@ void idPlayer::Think(void) {
 	buttonMask &= usercmd.buttons;
 	usercmd.buttons &= ~buttonMask;
 
-	//ALVIN
-	pfl.sprinting = !(usercmd.buttons & BUTTON_RUN);
-	if (!pfl.sliding) pfl.sliding = pfl.sprinting && pfl.crouch;
-	
+	//RESTRICT CONTROLS WHEN SLIDING
+	if (pfl.sliding)
+	{
+		usercmd.upmove = -127; //CROUCHING
+		usercmd.forwardmove = usercmd.forwardmove < 0 ? 0 : 127;
+	}
 
+
+	//SPRINTING
+	pfl.sprinting = !(usercmd.buttons & BUTTON_RUN);
+
+	//SLIDING
+	if (!pfl.sliding && pfl.forward && !pfl.crouchedLastFrame) pfl.sliding = pfl.sprinting && pfl.crouch;
+	gameLocal.Printf("%d\n", pfl.crouch);
+	gameLocal.Printf("%d*\n", pfl.crouchedLastFrame);
 
 	HandleObjectiveInput();
 	if ( objectiveSystemOpen ) {
@@ -9681,6 +9698,7 @@ void idPlayer::Think(void) {
 	//LAST FRAMES
 	pfl.sprintedLastFrame = pfl.sprinting;
 	pfl.slidLastFrame = pfl.sliding;
+	pfl.crouchedLastFrame = oldpfl.crouch;
 }
 
 /*

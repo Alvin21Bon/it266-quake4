@@ -8802,7 +8802,7 @@ void idPlayer::AdjustSpeed( void ) {
 		
 
 	}
-	gameLocal.Printf("%f\n", speed);
+	
 	physicsObj.SetSpeed( speed, pm_crouchspeed.GetFloat() );
 }
 

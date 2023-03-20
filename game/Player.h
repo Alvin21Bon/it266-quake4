@@ -330,6 +330,7 @@ public:
 		bool		sprinting		:1;
 		bool		sprintedLastFrame :1;
 		bool		sliding : 1;
+		bool		slidLastFrame : 1;
 	} pfl;
 		
 	// inventory

@@ -8755,6 +8755,34 @@ void idPlayer::AdjustSpeed( void ) {
 		speed *= 0.33f;
 	}
 
+	//NEW SLIDING
+	if (pfl.sliding)
+	{
+		int minTimeSliding = 1000; //ms
+		int defaultCrouchSpeed = 80; //yea magic number fuck you
+		static int currentCrouchSpeed;
+		static int originalTime;
+		int deltaTime = gameLocal.time - gameLocal.previousTime;
+		int framesInSlidingTime = 1000 / deltaTime;
+		int deteriorateAmount = ((pm_walkspeed.GetFloat() * 2) - defaultCrouchSpeed) / framesInSlidingTime;
+
+		
+
+		if (!pfl.slidLastFrame)
+		{
+			ToggleFlashlight();
+			currentCrouchSpeed = pm_walkspeed.GetFloat() * 2;
+			originalTime = gameLocal.time;
+		}
+
+		currentCrouchSpeed -= deteriorateAmount;
+		pm_crouchspeed.SetFloat(currentCrouchSpeed);
+
+		if ((gameLocal.time - originalTime) >= minTimeSliding) pfl.sliding = false;
+
+		
+	}
+
 	physicsObj.SetSpeed( speed, pm_crouchspeed.GetFloat() );
 }
 
@@ -9355,8 +9383,9 @@ void idPlayer::Think(void) {
 	usercmd.buttons &= ~buttonMask;
 
 	//ALVIN
-	pfl.sprinting = !(usercmd.buttons & BUTTON_RUN);	
-	pfl.sliding = pfl.sprinting && pfl.crouch;
+	pfl.sprinting = !(usercmd.buttons & BUTTON_RUN);
+	if (!pfl.sliding) pfl.sliding = pfl.sprinting && pfl.crouch;
+	
 
 
 	HandleObjectiveInput();
@@ -9651,6 +9680,7 @@ void idPlayer::Think(void) {
 
 	//LAST FRAMES
 	pfl.sprintedLastFrame = pfl.sprinting;
+	pfl.slidLastFrame = pfl.sliding;
 }
 
 /*

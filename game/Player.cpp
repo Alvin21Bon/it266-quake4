@@ -1763,6 +1763,12 @@ void idPlayer::Init( void ) {
 		teamDoublerPending = false;
 		teamDoubler = PlayEffect( "fx_doubler", renderEntity.origin, renderEntity.axis, true );
 	}
+
+
+
+
+
+	timeOfLastSlide = 0;
 }
 
 /*
@@ -8756,36 +8762,47 @@ void idPlayer::AdjustSpeed( void ) {
 	}
 
 	//NEW SLIDING
+	float defaultCrouchSpeed = 80; //yea magic number fuck you
+	int minTimeSliding = 1000; //ms
+
+	static float currentCrouchSpeed = speed;
+	static int originalTime;
+	int deltaTime = gameLocal.time - gameLocal.previousTime;
+	int framesInSlidingTime = 1000 / deltaTime;
+	float deteriorateAmount = ((pm_walkspeed.GetFloat() * 2) - defaultCrouchSpeed) / framesInSlidingTime;
 	if (pfl.sliding)
 	{
-		int minTimeSliding = 1000; //ms
-		int defaultCrouchSpeed = 80; //yea magic number fuck you
-		static int currentCrouchSpeed;
-		static int originalTime;
-		int deltaTime = gameLocal.time - gameLocal.previousTime;
-		int framesInSlidingTime = 1000 / deltaTime;
-		int deteriorateAmount = ((pm_walkspeed.GetFloat() * 2) - defaultCrouchSpeed) / framesInSlidingTime;
-
-		
-
 		if (!pfl.slidLastFrame)
 		{
 			currentCrouchSpeed = pm_walkspeed.GetFloat() * 2;
 			originalTime = gameLocal.time;
 		}
 
-		currentCrouchSpeed -= deteriorateAmount;
+		
+		if (physicsObj.CanStand()) currentCrouchSpeed -= deteriorateAmount;
+		else if (currentCrouchSpeed >= pm_walkspeed.GetFloat()) currentCrouchSpeed -= deteriorateAmount;
+		
 		pm_crouchspeed.SetFloat(currentCrouchSpeed);
 
-		if ((gameLocal.time - originalTime) >= minTimeSliding)
+		if ((gameLocal.time - originalTime) >= minTimeSliding && physicsObj.CanStand())
 		{
 			pfl.sliding = false;
 			pm_crouchspeed.SetFloat(defaultCrouchSpeed);
 		}
+	}
+	else
+	{
+		if (pfl.slidLastFrame) timeOfLastSlide = gameLocal.time;
 
 		
-	}
+		pm_crouchspeed.SetFloat(defaultCrouchSpeed);
+		currentCrouchSpeed += (speed - currentCrouchSpeed) / 5;
+		speed = currentCrouchSpeed; //NOW JUST CURRENT SPEED;
 
+		
+
+	}
+	gameLocal.Printf("%f\n", speed);
 	physicsObj.SetSpeed( speed, pm_crouchspeed.GetFloat() );
 }
 
@@ -9392,8 +9409,9 @@ void idPlayer::Think(void) {
 	//RESTRICT CONTROLS WHEN SLIDING
 	if (pfl.sliding)
 	{
-		usercmd.upmove = -127; //CROUCHING
-		usercmd.forwardmove = usercmd.forwardmove < 0 ? 0 : 127;
+		//usercmd.upmove = -127; //CROUCHING
+		if (!pfl.crouch) pfl.sliding = false;
+		usercmd.forwardmove = usercmd.forwardmove < 0 ? pfl.sliding = false : 127;
 	}
 
 
@@ -9401,9 +9419,7 @@ void idPlayer::Think(void) {
 	pfl.sprinting = !(usercmd.buttons & BUTTON_RUN);
 
 	//SLIDING
-	if (!pfl.sliding && pfl.forward && !pfl.crouchedLastFrame) pfl.sliding = pfl.sprinting && pfl.crouch;
-	gameLocal.Printf("%d\n", pfl.crouch);
-	gameLocal.Printf("%d*\n", pfl.crouchedLastFrame);
+	if (!pfl.sliding && pfl.forward && !pfl.crouchedLastFrame) pfl.sliding = pfl.sprinting && pfl.crouch && (gameLocal.time - timeOfLastSlide > 1000);
 
 	HandleObjectiveInput();
 	if ( objectiveSystemOpen ) {

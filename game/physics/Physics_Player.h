@@ -119,6 +119,10 @@ public:	// common physics interface
 
 	void					SetClipModelNoLink( idClipModel *clip );
 
+
+	//ALVIN
+	bool					CanStand( void );
+
 private:
 	// player physics state
 	playerPState_t			current;

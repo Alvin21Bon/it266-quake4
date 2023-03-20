@@ -1200,6 +1200,26 @@ void idPhysics_Player::CheckDuck( void ) {
 }
 
 /*
+==============
+idPhysics_Player::CanStand
+==============
+*/
+bool idPhysics_Player::CanStand()
+{
+	trace_t	trace;
+	idVec3 end;
+
+	end = current.origin - (pm_normalheight.GetFloat() - pm_crouchheight.GetFloat()) * gravityNormal;
+	gameLocal.Translation(self, trace, current.origin, end, clipModel, clipModel->GetAxis(), clipMask, self);
+	
+	if (trace.fraction >= 1.0f) {
+		return true;
+	}
+
+	return false;
+}
+
+/*
 ================
 idPhysics_Player::CheckLadder
 ================

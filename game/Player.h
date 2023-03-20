@@ -430,7 +430,7 @@ public:
 	float					buyMenuCash;
 // RITUAL END
 
-
+	int timeOfLastSlide;
 	
 
 public:

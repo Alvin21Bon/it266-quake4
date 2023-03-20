@@ -327,6 +327,8 @@ public:
 		bool		hearingLoss		:1;
 		bool		objectiveFailed	:1;
 		bool		noFallingDamage :1;
+		bool		sprinting		:1;
+		bool		sprintedLastFrame :1;
 	} pfl;
 		
 	// inventory

@@ -1669,7 +1669,7 @@ void idPlayer::Init( void ) {
 	// initialize the script variables
 	memset ( &pfl, 0, sizeof( pfl ) );
 	pfl.onGround = true;
-	pfl.noFallingDamage = false;
+	pfl.noFallingDamage = true;
 
 	// Start in idle
 	SetAnimState( ANIMCHANNEL_TORSO, "Torso_Idle", 0 );
@@ -9279,39 +9279,41 @@ idPlayer::Think
 Called every tic for each player
 ==============
 */
-void idPlayer::Think( void ) {
-	renderEntity_t *headRenderEnt;
- 
-	if ( talkingNPC ) {
-		if ( !talkingNPC.IsValid() ) {
+void idPlayer::Think(void) {
+	renderEntity_t* headRenderEnt;
+
+	if (talkingNPC) {
+		if (!talkingNPC.IsValid()) {
 			talkingNPC = NULL;
-		} else {
-			idAI *talkingNPCAI = (idAI*)(talkingNPC.GetEntity());
-			if ( !talkingNPCAI ) {
+		}
+		else {
+			idAI* talkingNPCAI = (idAI*)(talkingNPC.GetEntity());
+			if (!talkingNPCAI) {
 				//wtf?
 				talkingNPC = NULL;
-			} else if ( talkingNPCAI->talkTarget != this || !talkingNPCAI->IsSpeaking() || DistanceTo( talkingNPCAI ) > 256.0f ) {
+			}
+			else if (talkingNPCAI->talkTarget != this || !talkingNPCAI->IsSpeaking() || DistanceTo(talkingNPCAI) > 256.0f) {
 				//forget about them, okay to talk to someone else now
 				talkingNPC = NULL;
 			}
 		}
 	}
 
-	if ( !gameLocal.usercmds ) {
+	if (!gameLocal.usercmds) {
 		return;
 	}
 
 #ifdef _XENON
 	// change the crosshair if it's modified
-	if ( cursor && weapon && g_crosshairColor.IsModified() ) {
-		weapon->UpdateCrosshairGUI( cursor );
-		cursor->HandleNamedEvent( "weaponChange" );
+	if (cursor && weapon && g_crosshairColor.IsModified()) {
+		weapon->UpdateCrosshairGUI(cursor);
+		cursor->HandleNamedEvent("weaponChange");
 		g_crosshairColor.ClearModified();
 	}
 #endif
 
- 	// Dont do any thinking if we are in modview
-	if ( gameLocal.editors & EDITOR_MODVIEW || gameEdit->PlayPlayback() ) {
+	// Dont do any thinking if we are in modview
+	if (gameLocal.editors & EDITOR_MODVIEW || gameEdit->PlayPlayback()) {
 		// calculate the exact bobbed view position, which is used to
 		// position the view weapon, among other things
 		CalculateFirstPersonView();
@@ -9320,37 +9322,41 @@ void idPlayer::Think( void ) {
 		CalculateRenderView();
 
 		FreeModelDef();
-		
-		if ( weapon ) {
+
+		if (weapon) {
 			weapon->GetWorldModel()->FreeModelDef();
 		}
 
- 		if ( head.GetEntity() ) {
+		if (head.GetEntity()) {
 			head->FreeModelDef();
 		}
 
-		if ( clientHead ) {
+		if (clientHead) {
 			clientHead->FreeEntityDef();
 		}
 
 		return;
 	}
 
-	if( reloadModel ) {
-		LoadDeferredModel(); 
+	if (reloadModel) {
+		LoadDeferredModel();
 		reloadModel = false;
 	}
 
-	gameEdit->RecordPlayback( usercmd, this );
+	gameEdit->RecordPlayback(usercmd, this);
 
 	// latch button actions
 	oldButtons = usercmd.buttons;
 
 	// grab out usercmd
 	usercmd_t oldCmd = usercmd;
-	usercmd = gameLocal.usercmds[ entityNumber ];
+	usercmd = gameLocal.usercmds[entityNumber];
 	buttonMask &= usercmd.buttons;
 	usercmd.buttons &= ~buttonMask;
+
+	//NEW SPRINTING PFL
+	pfl.sprinting = !(usercmd.buttons & BUTTON_RUN);	
+	
 
 	HandleObjectiveInput();
 	if ( objectiveSystemOpen ) {
@@ -9640,6 +9646,10 @@ void idPlayer::Think( void ) {
 		inBuyZone = false;
 
 	inBuyZonePrev = false;
+
+
+	//LAST FRAMES
+	pfl.sprintedLastFrame = pfl.sprinting;
 }
 
 /*
@@ -10764,6 +10774,22 @@ idPlayer::OffsetThirdPersonView
 ===============
 */
 void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bool clip ) {
+
+	static float currentAngle, currentRange, currentHeight;
+
+	if (!pfl.sprintedLastFrame)
+	{
+		currentAngle = currentRange = currentHeight = 0;
+	}
+
+	currentAngle += (angle - currentAngle) / 2;
+	currentRange += (range - currentRange) / 10;
+	currentHeight += (height - currentHeight) / 10;
+	
+	angle = currentAngle;
+	range = currentRange;
+	height = currentHeight;
+
 	idVec3			view;
 	idVec3			focusAngles;
 	trace_t			trace;
@@ -10797,7 +10823,7 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	angles.pitch *= 0.5f;
 	renderView->viewaxis = angles.ToMat3() * physicsObj.GetGravityAxis();
 
-	idMath::SinCos( DEG2RAD( angle ), sideScale, forwardScale );
+	idMath::SinCos( DEG2RAD( 0.00 ), sideScale, forwardScale );
 	view -= range * forwardScale * renderView->viewaxis[ 0 ];
 	view += range * sideScale * renderView->viewaxis[ 1 ];
 
@@ -10835,7 +10861,7 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	}
 
 	angles.pitch = - RAD2DEG( idMath::ATan( focusPoint.z, focusDist ) );
-	angles.yaw -= angle;
+	angles.yaw += angle;
 
 	renderView->vieworg = view;
 	renderView->viewaxis = angles.ToMat3() * physicsObj.GetGravityAxis();
@@ -10890,8 +10916,8 @@ void idPlayer::GetViewPos( idVec3 &origin, idMat3 &axis ) const {
 	   	idBounds	relBounds(idVec3(0, 0, 0), idVec3(0, 0, 0));
 
   		playerView.ShakeOffsets( shakeOffset, shakeAngleOffset, relBounds );
-  		origin = GetEyePosition() + viewBob + shakeOffset;  		
-		angles = viewAngles + viewBobAngles + shakeAngleOffset + playerView.AngleOffset();
+  		origin = GetEyePosition() + shakeOffset;  		
+		angles = viewAngles + shakeAngleOffset + playerView.AngleOffset();
 
 		axis = angles.ToMat3() * physicsObj.GetGravityAxis();
 
@@ -10999,6 +11025,10 @@ create the renderView for the current tic
 ==================
 */
 void idPlayer::CalculateRenderView( void ) {
+
+	pm_thirdPerson.SetBool(pfl.sprinting);
+
+
 	int i;
 	float range;
 

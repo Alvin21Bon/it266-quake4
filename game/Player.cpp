@@ -9354,9 +9354,10 @@ void idPlayer::Think(void) {
 	buttonMask &= usercmd.buttons;
 	usercmd.buttons &= ~buttonMask;
 
-	//NEW SPRINTING PFL
+	//ALVIN
 	pfl.sprinting = !(usercmd.buttons & BUTTON_RUN);	
-	
+	pfl.sliding = pfl.sprinting && pfl.crouch;
+
 
 	HandleObjectiveInput();
 	if ( objectiveSystemOpen ) {
@@ -9498,7 +9499,7 @@ void idPlayer::Think(void) {
 	}
 
 	EvaluateControls();
-
+	
 
 // RAVEN BEGIN
 // abahr

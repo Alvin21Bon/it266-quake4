@@ -329,6 +329,7 @@ public:
 		bool		noFallingDamage :1;
 		bool		sprinting		:1;
 		bool		sprintedLastFrame :1;
+		bool		sliding : 1;
 	} pfl;
 		
 	// inventory
@@ -426,6 +427,9 @@ public:
 // squirrel: Mode-agnostic buymenus
 	float					buyMenuCash;
 // RITUAL END
+
+
+	
 
 public:
 	CLASS_PROTOTYPE( idPlayer );

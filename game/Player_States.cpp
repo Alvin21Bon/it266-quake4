@@ -448,7 +448,7 @@ stateResult_t idPlayer::State_Legs_Idle ( const stateParms_t& parms ) {
  					PlayCycle( ANIMCHANNEL_LEGS, "run_forward", parms.blendFrames );
 					PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Run_Forward", parms.blendFrames );
 				} else {
-					PlayCycle( ANIMCHANNEL_LEGS, "walk_forward", parms.blendFrames );
+					PlayCycle( ANIMCHANNEL_LEGS, "run_forward", parms.blendFrames );
 					PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Walk_Forward", parms.blendFrames );
 				}
 				
@@ -458,7 +458,7 @@ stateResult_t idPlayer::State_Legs_Idle ( const stateParms_t& parms ) {
 					PlayCycle( ANIMCHANNEL_LEGS, "run_backwards", parms.blendFrames );
 					PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Run_Backward", parms.blendFrames );
 				} else {
-					PlayCycle( ANIMCHANNEL_LEGS, "walk_backwards", parms.blendFrames );
+					PlayCycle( ANIMCHANNEL_LEGS, "run_backwards", parms.blendFrames );
 					PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Walk_Backward", parms.blendFrames );
 				}
 			
@@ -468,7 +468,7 @@ stateResult_t idPlayer::State_Legs_Idle ( const stateParms_t& parms ) {
 					PlayCycle( ANIMCHANNEL_LEGS, "run_strafe_left", parms.blendFrames );
 					PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Run_Left", parms.blendFrames );
 				} else {
-					PlayCycle( ANIMCHANNEL_LEGS, "walk_left", parms.blendFrames );
+					PlayCycle( ANIMCHANNEL_LEGS, "run_strafe_left", parms.blendFrames );
 					PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Walk_Left", parms.blendFrames );
 				}
 				
@@ -478,7 +478,7 @@ stateResult_t idPlayer::State_Legs_Idle ( const stateParms_t& parms ) {
 					PlayCycle( ANIMCHANNEL_LEGS, "run_strafe_right", parms.blendFrames );
 					PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Run_Right", parms.blendFrames );
 				} else {
-					PlayCycle( ANIMCHANNEL_LEGS, "walk_right", parms.blendFrames );
+					PlayCycle( ANIMCHANNEL_LEGS, "run_strafe_right", parms.blendFrames );
 					PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Walk_Right", parms.blendFrames );
 				}
 
@@ -585,7 +585,7 @@ stateResult_t idPlayer::State_Legs_Run_Forward ( const stateParms_t& parms ) {
 		if( usercmd.buttons & BUTTON_RUN ) {
 			return SRESULT_WAIT;
 		} else {
-			PlayCycle( ANIMCHANNEL_LEGS, "walk_forward", parms.blendFrames );
+			PlayCycle( ANIMCHANNEL_LEGS, "run_forward", parms.blendFrames );
 			PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Walk_Forward", parms.blendFrames );
 			return SRESULT_DONE;
 		}
@@ -604,7 +604,7 @@ stateResult_t idPlayer::State_Legs_Run_Backward ( const stateParms_t& parms ) {
 		if( usercmd.buttons & BUTTON_RUN ) {
 			return SRESULT_WAIT;
 		} else {
-			PlayCycle( ANIMCHANNEL_LEGS, "walk_backwards", parms.blendFrames );
+			PlayCycle( ANIMCHANNEL_LEGS, "run_backwards", parms.blendFrames );
 			PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Walk_Backward", parms.blendFrames );
 			return SRESULT_DONE;
 		}
@@ -623,7 +623,7 @@ stateResult_t idPlayer::State_Legs_Run_Left ( const stateParms_t& parms ) {
 		if( usercmd.buttons & BUTTON_RUN ) {
 			return SRESULT_WAIT;
 		} else {
-			PlayCycle( ANIMCHANNEL_LEGS, "walk_left", parms.blendFrames );
+			PlayCycle( ANIMCHANNEL_LEGS, "run_strafe_left", parms.blendFrames );
 			PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Walk_Left", parms.blendFrames );
 			return SRESULT_DONE;
 		}
@@ -642,7 +642,7 @@ stateResult_t idPlayer::State_Legs_Run_Right ( const stateParms_t& parms ) {
 		if( usercmd.buttons & BUTTON_RUN ) {
 			return SRESULT_WAIT;
 		} else {
-			PlayCycle( ANIMCHANNEL_LEGS, "walk_right", parms.blendFrames );
+			PlayCycle( ANIMCHANNEL_LEGS, "run_strafe_right", parms.blendFrames );
 			PostAnimState ( ANIMCHANNEL_LEGS, "Legs_Walk_Right", parms.blendFrames );
 			return SRESULT_DONE;
 		}

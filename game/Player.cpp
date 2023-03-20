@@ -10842,6 +10842,8 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 
 	static float currentAngle, currentRange, currentHeight;
 
+	if (pfl.crouch) height = 0;
+
 	if (!pfl.sprintedLastFrame)
 	{
 		currentAngle = currentRange = currentHeight = 0;

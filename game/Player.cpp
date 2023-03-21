@@ -9329,7 +9329,7 @@ Called every tic for each player
 */
 void idPlayer::Think(void) {
 	//ALVIN OLD
-	struct playerFlags_s oldpfl = pfl;
+	oldpfl = pfl;
 
 
 	renderEntity_t* headRenderEnt;
@@ -9400,6 +9400,10 @@ void idPlayer::Think(void) {
 	// latch button actions
 	oldButtons = usercmd.buttons;
 
+
+	//*********************************************************************
+
+
 	// grab out usercmd
 	usercmd_t oldCmd = usercmd;
 	usercmd = gameLocal.usercmds[entityNumber];
@@ -9420,6 +9424,23 @@ void idPlayer::Think(void) {
 
 	//SLIDING
 	if (!pfl.sliding && pfl.forward && !pfl.crouchedLastFrame) pfl.sliding = pfl.sprinting && pfl.crouch && (gameLocal.time - timeOfLastSlide > 1000);
+
+	//WALL RUNNING AND WALL CLIMBING
+	trace_t wall;
+	if (physicsObj.TouchingWall(wall))
+	{
+		float wallAngleYaw = (-wall.c.normal).ToAngles().yaw;
+		float playerAngleYaw = viewAngles.yaw;
+		// 1 if looking directly at wall. 0 if looking parellel. Negative if looking away
+		float playerFocusOnWall = idMath::Cos(idMath::M_DEG2RAD * idMath::Fabs(wallAngleYaw - playerAngleYaw));
+
+		
+	}
+
+
+	//*********************************************************************
+
+
 
 	HandleObjectiveInput();
 	if ( objectiveSystemOpen ) {

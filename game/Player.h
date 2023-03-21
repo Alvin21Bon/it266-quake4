@@ -332,7 +332,9 @@ public:
 		bool		sliding : 1;
 		bool		slidLastFrame : 1;
 		bool		crouchedLastFrame : 1;
-	} pfl;
+		bool		wallRunning : 1;
+		bool		wallClimbing : 1;
+	} pfl, oldpfl;
 		
 	// inventory
 	idInventory				inventory;

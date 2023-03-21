@@ -122,6 +122,7 @@ public:	// common physics interface
 
 	//ALVIN
 	bool					CanStand( void );
+	bool					TouchingWall(trace_t &result);
 
 private:
 	// player physics state

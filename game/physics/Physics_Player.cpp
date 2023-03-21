@@ -1199,6 +1199,8 @@ void idPhysics_Player::CheckDuck( void ) {
 	}
 }
 
+//ALVIN
+
 /*
 ==============
 idPhysics_Player::CanStand
@@ -1218,6 +1220,49 @@ bool idPhysics_Player::CanStand()
 
 	return false;
 }
+
+/*
+==============
+idPhysics_Player::TouchingWall
+============
+*/
+bool idPhysics_Player::TouchingWall(trace_t &result)
+{
+	idVec3 forwardV(1, 0, 0), leftV(0, -1, 0), rightV(0, 1, 0), backwardV(-1, 0, 0);
+	trace_t forward, left, right, backward;
+	ClipTranslation(forward, forwardV, NULL);
+	ClipTranslation(left, leftV, NULL);
+	ClipTranslation(right, rightV, NULL);
+	ClipTranslation(backward, backwardV, NULL);
+
+	if (forward.fraction != 1 && forward.c.normal.z == 0)
+	{
+		result = forward;
+		return true;
+	}
+	else if (left.fraction != 1 && left.c.normal.z == 0)
+	{
+		result = left;
+		return true;
+	}
+	else if (right.fraction != 1 && right.c.normal.z == 0)
+	{
+		result = right;
+		return true;
+	}
+	else if (backward.fraction != 1 && backward.c.normal.z == 0)
+	{
+		result = backward;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+
 
 /*
 ================

@@ -9090,7 +9090,7 @@ void idPlayer::Move( void ) {
 		pfl.onGround	= physicsObj.HasGroundContacts();
 		pfl.onLadder	= physicsObj.OnLadder();
 		pfl.jump		= physicsObj.HasJumped();
-
+		
  		// check if we're standing on top of a monster and give a push if we are
  		idEntity *groundEnt = physicsObj.GetGroundEntity();
 // RAVEN BEGIN
@@ -9426,11 +9426,15 @@ void idPlayer::Think(void) {
 	if (!pfl.sliding && pfl.forward && !pfl.crouchedLastFrame) pfl.sliding = pfl.sprinting && pfl.crouch && (gameLocal.time - timeOfLastSlide > 1000);
 
 	//WALL RUNNING AND WALL CLIMBING
+	//THIS SECTION JUST UPDATES THE PLAYER FLAGS APPROPIATELY. 
 	trace_t wall;
-	if (usercmd.forwardmove && physicsObj.TouchingWall(wall))
+	float wallAngleYaw;
+	float playerAngleYaw;
+	if (usercmd.forwardmove && physicsObj.TouchingWall(wall) && physicsObj.CanStand())
 	{
-		float wallAngleYaw = (-wall.c.normal).ToAngles().yaw;
-		float playerAngleYaw = viewAngles.yaw;
+		wallAngleYaw = (-wall.c.normal).ToAngles().yaw;
+		playerAngleYaw = viewAngles.yaw;
+		
 		// 1 if looking directly at wall. 0 if looking parellel. Negative if looking away
 		float playerFocusOnWall = idMath::Cos(idMath::M_DEG2RAD * idMath::Fabs(wallAngleYaw - playerAngleYaw));
 
@@ -9450,8 +9454,60 @@ void idPlayer::Think(void) {
 		}
 	}
 	else pfl.wallMovement = false;
+	if (!pfl.wallMovement)
+	{
+		pfl.wallClimbing = false;
+		pfl.wallRunning = false;
+	}
 
+	//PERFORMING WALL MOVEMENT
+	if (pfl.wallMovement)
+	{
+		//RESTRICT MOVEMENT
+		usercmd.rightmove = 0;
+		usercmd.forwardmove = 0;
 
+		float playerAngleYawTo360 = playerAngleYaw < +0 ? playerAngleYaw + 360 : playerAngleYaw;
+		static int wallRunDirection;
+		enum {
+			LEFT,
+			RIGHT
+		};
+		if (pfl.wallRunning)
+		{
+			//aodwioanofn how to deal with playerAngle being bigger for both left and right UGLY!
+			
+			if (!oldpfl.wallMovement)
+			{
+				if (wallAngleYaw == 0 || wallAngleYaw == -0)
+				{
+					if (playerAngleYawTo360 > 180 && playerAngleYawTo360 < 360)
+					{
+						wallRunDirection = RIGHT;
+					}
+					else wallRunDirection = LEFT;
+				}
+				else wallRunDirection = playerAngleYawTo360 > wallAngleYaw ? LEFT : RIGHT;
+			}
+			
+			idVec3 wallRunVector;
+			idMat3 wallRunVectorTransformer;
+			switch (wallRunDirection) {
+				case LEFT:
+					wallRunVectorTransformer = idMat3(idVec3(0, -1, 0), idVec3(1, 0, 0), idVec3(0, 0, 0));
+					break;
+				case RIGHT:
+					wallRunVectorTransformer = idMat3(idVec3(0, 1, 0), idVec3(-1, 0, 0), idVec3(0, 0, 0));
+					break;
+			}
+			wallRunVector = wallRunVectorTransformer * wall.c.normal;
+			wallRunVector *= pm_walkspeed.GetFloat();
+
+			physicsObj.SetLinearVelocity(wallRunVector);
+		}
+		
+	}
+	
 	//*********************************************************************
 
 
@@ -9604,7 +9660,7 @@ void idPlayer::Think(void) {
 		UpdateGravity();
 	}
 // RAVEN END
-
+	
 	Move();
 
 	if ( !g_stopTime.GetBool() ) {

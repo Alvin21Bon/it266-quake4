@@ -706,6 +706,7 @@ brushDef3
 "origin" "-872 168 224"
 "light_radius" "196 180 300"
 "target" "target_null_1"
+"texture" "lights/ambientLight"
 }
 // entity 6
 {

@@ -332,6 +332,7 @@ public:
 		bool		sliding : 1;
 		bool		slidLastFrame : 1;
 		bool		crouchedLastFrame : 1;
+		bool		wallMovement : 1;
 		bool		wallRunning : 1;
 		bool		wallClimbing : 1;
 	} pfl, oldpfl;

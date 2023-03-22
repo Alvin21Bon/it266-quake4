@@ -9427,15 +9427,29 @@ void idPlayer::Think(void) {
 
 	//WALL RUNNING AND WALL CLIMBING
 	trace_t wall;
-	if (physicsObj.TouchingWall(wall))
+	if (usercmd.forwardmove && physicsObj.TouchingWall(wall))
 	{
 		float wallAngleYaw = (-wall.c.normal).ToAngles().yaw;
 		float playerAngleYaw = viewAngles.yaw;
 		// 1 if looking directly at wall. 0 if looking parellel. Negative if looking away
 		float playerFocusOnWall = idMath::Cos(idMath::M_DEG2RAD * idMath::Fabs(wallAngleYaw - playerAngleYaw));
 
-		
+		if (usercmd.upmove > 10 && !pfl.wallMovement /*checked so flag is only set once initially*/)
+		{
+			if (playerFocusOnWall >= .80)
+			{
+				pfl.wallClimbing = true;
+			}
+			else if (playerFocusOnWall > 0)
+			{
+				pfl.wallRunning = true;
+			}
+
+			if (playerFocusOnWall > 0)
+				pfl.wallMovement = true;
+		}
 	}
+	else pfl.wallMovement = false;
 
 
 	//*********************************************************************

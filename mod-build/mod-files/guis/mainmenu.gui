@@ -20618,7 +20618,7 @@ windowDef Desktop
 			}
 
 			onAction {
-				consoleCMD "map debug" ;
+				consoleCMD "map sad" ;
 				
 				set "cmd" "play main_menu_selection" ;
 			}

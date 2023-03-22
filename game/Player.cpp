@@ -9468,15 +9468,16 @@ void idPlayer::Think(void) {
 		usercmd.forwardmove = 0;
 
 		float playerAngleYawTo360 = playerAngleYaw < +0 ? playerAngleYaw + 360 : playerAngleYaw;
-		static int wallRunDirection;
-		enum {
-			LEFT,
-			RIGHT
-		};
 		if (pfl.wallRunning)
 		{
+			static int wallRunDirection;
+			enum {
+				LEFT,
+				RIGHT
+			};
+
+
 			//aodwioanofn how to deal with playerAngle being bigger for both left and right UGLY!
-			
 			if (!oldpfl.wallMovement)
 			{
 				if (wallAngleYaw == 0 || wallAngleYaw == -0)
@@ -9505,7 +9506,22 @@ void idPlayer::Think(void) {
 
 			physicsObj.SetLinearVelocity(wallRunVector);
 		}
-		
+		else if (pfl.wallClimbing)
+		{
+			idVec3 wallClimbVector(0, 0, pm_walkspeed.GetFloat());
+			physicsObj.SetLinearVelocity(wallClimbVector);
+		}
+
+		//JUMPING OUT OF WALL MOVEMENT STATE
+
+	}
+	//MANTLING CODE!!!!!
+	else
+	{
+		if (oldpfl.wallClimbing)
+		{
+			physicsObj.SetLinearVelocity(idVec3(0, 0, 0));
+		}
 	}
 	
 	//*********************************************************************

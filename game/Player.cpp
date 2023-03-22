@@ -9430,7 +9430,7 @@ void idPlayer::Think(void) {
 	trace_t wall;
 	float wallAngleYaw;
 	float playerAngleYaw;
-	if (usercmd.forwardmove && physicsObj.TouchingWall(wall) && physicsObj.CanStand())
+	if (usercmd.forwardmove > 10 && physicsObj.TouchingWall(wall) && physicsObj.CanStand())
 	{
 		wallAngleYaw = (-wall.c.normal).ToAngles().yaw;
 		playerAngleYaw = viewAngles.yaw;
@@ -9458,6 +9458,7 @@ void idPlayer::Think(void) {
 	{
 		pfl.wallClimbing = false;
 		pfl.wallRunning = false;
+		pfl.jumpedOutOfWallMovementLastFrame = false;
 	}
 
 	//PERFORMING WALL MOVEMENT
@@ -9513,14 +9514,24 @@ void idPlayer::Think(void) {
 		}
 
 		//JUMPING OUT OF WALL MOVEMENT STATE
+		if (usercmd.upmove && oldCmd.upmove < 10 && oldpfl.wallMovement)
+		{
+			idVec3 jumpDir = viewAngles.ToForward();
+			physicsObj.SetLinearVelocity(jumpDir * (pm_walkspeed.GetFloat() * 1.5));
 
+			pfl.wallMovement = false;
+			pfl.jumpedOutOfWallMovementLastFrame = true; // <-- ONLY USED TO BUGFIX JUMPING OUT OF WALLCLIMBING
+		}
 	}
 	//MANTLING CODE!!!!!
 	else
 	{
 		if (oldpfl.wallClimbing)
 		{
-			physicsObj.SetLinearVelocity(idVec3(0, 0, 0));
+			if (!oldpfl.jumpedOutOfWallMovementLastFrame) // <-- bugfix for jumping out of wallclimbing
+			{
+				physicsObj.SetLinearVelocity(idVec3(0, 0, 0));
+			}
 		}
 	}
 	

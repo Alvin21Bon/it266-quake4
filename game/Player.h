@@ -335,6 +335,7 @@ public:
 		bool		wallMovement : 1;
 		bool		wallRunning : 1;
 		bool		wallClimbing : 1;
+		bool		jumpedOutOfWallMovementLastFrame : 1;
 	} pfl, oldpfl;
 		
 	// inventory
